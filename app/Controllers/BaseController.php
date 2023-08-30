@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use App\Models\SettingsModel;
 
 /**
  * Class BaseController
@@ -35,7 +36,7 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = [];
+    protected $helpers = ['form', 'common'];
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -43,6 +44,7 @@ abstract class BaseController extends Controller
      */
     // protected $session;
 
+    protected $settings = null;
     /**
      * @return void
      */
@@ -54,5 +56,31 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
+    }
+
+    /** 
+     * Get settings from db
+     */
+    public function getSettings()
+    {
+        if($this->settings === null ){
+            $this->setSettings();
+        }
+        return $this->settings;
+    }
+
+    /** 
+     * Set settings 
+     */
+    private function setSettings() {
+        $settings_model = new SettingsModel();
+        $settings = $settings_model->first();
+        if(!$settings){
+            $this->settings = false;
+        }else{
+            $this->settings = $settings;
+        }
+
+        return true;
     }
 }
